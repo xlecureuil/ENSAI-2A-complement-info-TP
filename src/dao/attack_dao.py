@@ -3,7 +3,6 @@ from dao.type_attack_dao import TypeAttackDAO
 from utils.singleton import Singleton
 from dao.db_connection import DBConnection
 from business_object.attack.abstract_attack import AbstractAttack
-from business_object.attack.attack_factory import AttackFactory
 
 
 class AttackDao(metaclass=Singleton):
