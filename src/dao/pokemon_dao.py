@@ -2,9 +2,9 @@ from typing import List, Optional
 from dao.db_connection import DBConnection
 from utils.singleton import Singleton
 from business_object.pokemon.abstract_pokemon import AbstractPokemon
-from business_object.attack.abstract_attack import AbstractAttack
 from business_object.pokemon.pokemon_factory import PokemonFactory
 from business_object.attack.attack_factory import AttackFactory
+from dao.pokemon_type_dao import PokemonType
 
 
 class PokemonDAO(metaclass=Singleton):
@@ -62,9 +62,12 @@ class PokemonDAO(metaclass=Singleton):
             attacks = []
             pokemon_id = res[0]["id_pokemon_type"]
             pokemon_name = res[0]["name"]
+            id_pokemon_type = res[0]["id_pokemon_type"]
+
+            pokemon_type = PokemonType().find_pokemon_type(id_pokemon_type)
 
             for row in res:
-                if row["id_attack"]:  # Si une attaque est trouvée
+                if row["id_attack_type"]:  # Si une attaque est trouvée
                     attacks.append(
                         AttackFactory().instantiate_attack(
                             id=row["id_attack_type"],
@@ -73,5 +76,14 @@ class PokemonDAO(metaclass=Singleton):
                         )
                     )
 
-            return AbstractPokemon(id=pokemon_id, name=pokemon_name, attacks=attacks)
+            return PokemonFactory().instantiate_pokemon(
+                id=pokemon_id,
+                name=pokemon_name,
+                type=pokemon_type,
+                common_attacks=attacks,
+            )
         return None
+
+
+if __name__ == "__main__":
+    print(PokemonDAO().find_pokemon_by_name("Venusaur"))

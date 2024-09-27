@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict
+from dao.pokemon_dao import PokemonDAO
 
 app = FastAPI()
 
@@ -61,8 +62,32 @@ def delete_character(character_id: int):
     return deleted_character
 
 
+# Défintion du endpoint get /pokemon`/{name}
+@app.get("/pokemon/{name}")
+async def get_pokemon_by_name(name: str):
+    pokemon = PokemonDAO().find_pokemon_by_name(name)
+    if pokemon is None:
+        # Si le Pokémon n'est pas trouvé, lever une exception HTTP 404
+        raise HTTPException(status_code=404, detail="Pokémon non trouvé")
+    return pokemon
+
+
 # Run the FastAPI application
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=80)
+
+
+# # Défintion du endpoint get /attack?limit=100
+# @app.get("/attack/")
+# async def get_all_attacks(limit: int):
+#     # TODO: récupérer les attaques en base en utilisant votre DAO
+#     return attacks
+
+
+# # Défintion du endpoint get /pokemon?limit=100
+# @app.get("/pokemon/")
+# async def get_all_pokemons(limit: int):
+#     # TODO: récupérer les pokemons en base en utilisant votre DAO
+#     return pokemons
